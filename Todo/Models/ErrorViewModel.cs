@@ -1,4 +1,4 @@
-namespace dotnet_mvc_todo.Models
+namespace Todo.Models
 {
     public class ErrorViewModel
     {
