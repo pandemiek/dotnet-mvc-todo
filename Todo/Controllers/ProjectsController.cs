@@ -7,27 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Todo.Data;
 using Todo.Models;
-using Task = Todo.Models.Task;
 
 namespace Todo.Controllers
 {
-    public class TasksController : Controller
+    public class ProjectsController : Controller
     {
         private readonly TodoContext _context;
 
-        public TasksController(TodoContext context)
+        public ProjectsController(TodoContext context)
         {
             _context = context;
         }
 
-        // GET: Tasks1
+        // GET: Projects
         public async Task<IActionResult> Index()
         {
-            var todoContext = _context.Task.Include(t => t.Project);
-            return View(await todoContext.ToListAsync());
+            return View(await _context.Project.ToListAsync());
         }
 
-        // GET: Tasks1/Details/5
+        // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -35,57 +33,39 @@ namespace Todo.Controllers
                 return NotFound();
             }
 
-            var task = await _context.Task
-                .Include(t => t.Project)
+            var project = await _context.Project
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (task == null)
+            if (project == null)
             {
                 return NotFound();
             }
 
-            return View(task);
+            return View(project);
         }
 
-        // GET: Tasks/Create
-        [HttpGet]
+        // GET: Projects/Create
         public IActionResult Create()
         {
-            TaskProjectViewModel taskProjectViewModel = new TaskProjectViewModel()
-            {
-                AllProjects = _context.Project.ToList(),
-            };
-
-            //ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id");
-            return View(taskProjectViewModel);
+            return View();
         }
 
-        // POST: Tasks/Create
+        // POST: Projects/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,ProjectId,DueDate,Priority,Status")] Task task)
+        public async Task<IActionResult> Create([Bind("Id,Name,Colour")] Project project)
         {
-            //Set relationship navigation based on selected ProjectId
-            task.Project = _context.Project.ToList().FirstOrDefault<Project>(p => p.Id == task.ProjectId, _context.Project.ToList()[0]);
-
             if (ModelState.IsValid)
             {
-                _context.Add(task);
+                _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
-            TaskProjectViewModel taskProjectViewModel = new TaskProjectViewModel()
-            {
-                AllProjects = _context.Project.ToList(),
-            };
-
-            taskProjectViewModel.Project = task.Project;
-            return View(taskProjectViewModel);
+            return View(project);
         }
 
-        // GET: Tasks1/Edit/5
+        // GET: Projects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -93,23 +73,22 @@ namespace Todo.Controllers
                 return NotFound();
             }
 
-            var task = await _context.Task.FindAsync(id);
-            if (task == null)
+            var project = await _context.Project.FindAsync(id);
+            if (project == null)
             {
                 return NotFound();
             }
-            ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", task.ProjectId);
-            return View(task);
+            return View(project);
         }
 
-        // POST: Tasks1/Edit/5
+        // POST: Projects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,ProjectId,DueDate,Priority,Status")] Task task)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Colour")] Project project)
         {
-            if (id != task.Id)
+            if (id != project.Id)
             {
                 return NotFound();
             }
@@ -118,12 +97,12 @@ namespace Todo.Controllers
             {
                 try
                 {
-                    _context.Update(task);
+                    _context.Update(project);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TaskExists(task.Id))
+                    if (!ProjectExists(project.Id))
                     {
                         return NotFound();
                     }
@@ -134,11 +113,10 @@ namespace Todo.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", task.ProjectId);
-            return View(task);
+            return View(project);
         }
 
-        // GET: Tasks1/Delete/5
+        // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -146,35 +124,34 @@ namespace Todo.Controllers
                 return NotFound();
             }
 
-            var task = await _context.Task
-                .Include(t => t.Project)
+            var project = await _context.Project
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (task == null)
+            if (project == null)
             {
                 return NotFound();
             }
 
-            return View(task);
+            return View(project);
         }
 
-        // POST: Tasks1/Delete/5
+        // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var task = await _context.Task.FindAsync(id);
-            if (task != null)
+            var project = await _context.Project.FindAsync(id);
+            if (project != null)
             {
-                _context.Task.Remove(task);
+                _context.Project.Remove(project);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TaskExists(int id)
+        private bool ProjectExists(int id)
         {
-            return _context.Task.Any(e => e.Id == id);
+            return _context.Project.Any(e => e.Id == id);
         }
     }
 }

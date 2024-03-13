@@ -1,4 +1,4 @@
-﻿@model Todo.Models.TaskProjectViewModel
+﻿@model IEnumerable<Todo.Models.Task>
 
 @{
     ViewData["Title"] = "Index";
@@ -9,38 +9,32 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-
-<form asp-controller="Tasks" asp-action="Index" method="get">
-    <p>
-        <select asp-for="TaskProject" asp-items="Model.Projects">
-            <option value="">All</option>
-        </select>
-
-        Title:  <input type="text" name="SearchString" />
-        <input type="submit" value="Filter" />
-    </p>
-</form>
-
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks![0].Title)
+                @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks![0].Description)
+                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks![0].DueDate)
+                @Html.DisplayNameFor(model => model.Project)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks![0].Status)
+                @Html.DisplayNameFor(model => model.DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Priority)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Tasks!) {
+@foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
@@ -49,7 +43,13 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Project.Id)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Status)

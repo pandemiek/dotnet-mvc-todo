@@ -15,5 +15,6 @@ namespace Todo.Data
         }
 
         public DbSet<Todo.Models.Task> Task { get; set; } = default!;
+        public DbSet<Todo.Models.Project> Project { get; set; } = default!;
     }
 }
