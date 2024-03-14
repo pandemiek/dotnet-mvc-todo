@@ -1,0 +1,42 @@
+﻿@model Todo.Models.Project
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Tasks in @Model.Name</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tasks.First().Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tasks.First().Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model.Tasks)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => task.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => task.Description)
+                </td>
+                <td>
+                    <a asp-controller="Tasks" asp-action="Edit" asp-route-id="@task.Id">Edit</a> |
+                    <a asp-controller="Tasks" asp-action="Details" asp-route-id="@task.Id">Details</a> |
+                    <a asp-controller="Tasks" asp-action="Delete" asp-route-id="@task.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

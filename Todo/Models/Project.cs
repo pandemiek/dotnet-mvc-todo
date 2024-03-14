@@ -8,6 +8,6 @@ namespace Todo.Models
         [Display(Name = "Project")]
         public string Name { get; set; }
         public string Colour { get; set; }
-        public ICollection<Task> Tasks { get; set; } = new List<Task>();
+        public List<Task> Tasks { get; } = [];
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Todo.Data;
-using Todo.Models;
+using Todo.Models.ViewModels;
 using Task = Todo.Models.Task;
 
 namespace Todo.Controllers
@@ -55,7 +55,6 @@ namespace Todo.Controllers
                 AllProjects = _context.Project.ToList(),
             };
 
-            //ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id");
             return View(taskProjectViewModel);
         }
 
@@ -67,12 +66,13 @@ namespace Todo.Controllers
         public async Task<IActionResult> Create([Bind("Id,Title,Description,ProjectId,DueDate,Priority,Status")] Task task)
         {
             //Set relationship navigation based on selected ProjectId
-            task.Project = _context.Project.ToList().FirstOrDefault<Project>(p => p.Id == task.ProjectId, _context.Project.ToList()[0]);
+            var project = _context.Project.Single(p => p.Id == task.ProjectId);
+            task.ProjectId = project.Id;
 
             if (ModelState.IsValid)
             {
-                _context.Add(task);
-                await _context.SaveChangesAsync();
+                _context.Task.Add(task);
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
 
@@ -98,8 +98,15 @@ namespace Todo.Controllers
             {
                 return NotFound();
             }
-            ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", task.ProjectId);
-            return View(task);
+
+            TaskProjectViewModel taskProjectViewModel = new TaskProjectViewModel()
+            {
+                AllProjects = _context.Project.ToList(),
+                Task = _context.Task.FirstOrDefault(task => task.Id == id),
+            };
+
+            //ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", task.ProjectId);
+            return View(taskProjectViewModel);
         }
 
         // POST: Tasks1/Edit/5
@@ -132,7 +139,7 @@ namespace Todo.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Tasks", "Projects", new { id = task.ProjectId });
             }
             ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Id", task.ProjectId);
             return View(task);
@@ -166,6 +173,23 @@ namespace Todo.Controllers
             if (task != null)
             {
                 _context.Task.Remove(task);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+  
+
+        //POST: Tasks/Complete/5
+        [HttpPost]
+        public async Task<IActionResult> Complete(int id)
+        {
+            var task = await _context.Task.FindAsync(id);
+            if (task != null)
+            {
+                task.Status = Status.Completed;
+                _context.Update(task);
             }
 
             await _context.SaveChangesAsync();

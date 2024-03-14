@@ -4,11 +4,27 @@
     ViewData["Title"] = "Index";
 }
 
+@section Scripts {
+    <script type="text/javascript">
+        function CompleteTask(taskId) {
+            fetch(`/Tasks/Complete?id=${taskId}`, {
+                method: 'post'
+            }).then((response) => {
+                alert(response)
+            }).catch((err) => {
+                alert(`error: ${err}`);
+            })
+
+        }
+    </script>
+}
+
 <h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -19,7 +35,7 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Project)
+                @Html.DisplayNameFor(model => model.Project.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DueDate)
@@ -43,7 +59,7 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Project.Id)
+                @Html.DisplayFor(modelItem => item.Project.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DueDate)
@@ -57,7 +73,8 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                <a onclick="CompleteTask(@item.Id)" href="#">Complete</a>
             </td>
         </tr>
 }

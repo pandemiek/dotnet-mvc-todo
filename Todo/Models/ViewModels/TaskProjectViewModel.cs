@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Todo.Models
+namespace Todo.Models.ViewModels
 {
     public class TaskProjectViewModel
     {

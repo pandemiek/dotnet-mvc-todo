@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.Data;
 using Todo.Models;
@@ -22,7 +17,11 @@ namespace Todo.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Project.ToListAsync());
+            var projects = await _context.Project
+                .Include(p => p.Tasks)
+                .ToListAsync();
+
+            return View(projects);
         }
 
         // GET: Projects/Details/5
@@ -147,6 +146,27 @@ namespace Todo.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Projects/Tasks/5
+        public async Task<IActionResult> Tasks(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var project = _context.Project
+                .Include(project => project.Tasks)
+                .ToList()
+                .Find(project => project.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project);
         }
 
         private bool ProjectExists(int id)
